@@ -8,8 +8,9 @@ Stable tag: 1.0.1
 
 == Description ==
 
-This plugin can save remote images in the posts to local server automatically and add it as an attachment to the post.
-自动保存日志中的远程图片到本地服务器并将保存后的文件作为日志的附件。
+This plugin can save remote images in the posts to local server automatically and 
+add it as an attachment to the post.
+此插件的作用是自动保存日志中的远程图片到本地服务器并将保存后的文件作为日志的附件。
 
  
 == Installation ==

@@ -3,10 +3,23 @@
 Plugin Name: Hacklog Remote Image Autosave
 Version: 1.0.1
 Plugin URI: http://ihacklog.com/?p=5087
-Description: save remote images in the posts to local server and add it as an attachment to the post.自动保存日志中的远程图片到本地服务器并将保存后的文件作为日志的附件。
+Description: save remote images in the posts to local server and add it as an attachment to the post.
 Author: 荒野无灯
 Author URI: http://ihacklog.com
 */
+
+/**
+ * $Id$
+ * $Revision$
+ * $Date$
+ * @package Hacklog Remote Image Autosave
+ * @encoding UTF-8
+ * @author 荒野无灯 <HuangYeWuDeng>
+ * @link http://ihacklog.com
+ * @copyright Copyright (C) 2011 荒野无灯
+ * @license http://www.gnu.org/licenses/
+ */
+
 
 class hacklog_remote_image_autosave 
 {
