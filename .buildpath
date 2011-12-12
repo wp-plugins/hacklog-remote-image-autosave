@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<buildpath>
-	<buildpathentry kind="con" path="org.eclipse.php.core.LANGUAGE"/>
-	<buildpathentry kind="src" path=""/>
-	<buildpathentry external="true" kind="lib" path="D:/htdocs/wordpress/wp-admin"/>
-	<buildpathentry external="true" kind="lib" path="D:/htdocs/wordpress/wp-includes"/>
-</buildpath>
