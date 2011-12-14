@@ -3,8 +3,11 @@ Contributors: ihacklog
 Donate link: http://ihacklog.com/donate
 Tags: images, auto,autosave,remote
 Requires at least: 3.2.1
-Tested up to: 3.2.1
+Tested up to: 3.3
 Stable tag: 1.0.1
+
+save remote images in the posts to local server and add it as an attachment to the post.
+
 
 == Description ==
 
