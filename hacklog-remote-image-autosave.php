@@ -157,6 +157,12 @@ class hacklog_remote_image_autosave
 					if (in_array ( $file_ext, $allowed_filetype )) 
 					{
 						$http = wp_remote_get($remote_image_url);
+						//ignore  WP_Error
+						if(is_wp_error($http))
+						{
+							continue;
+						}
+												
 						if ( 200 == $http['response']['code']) 
 						{
 							$file_content = $http['body'];
