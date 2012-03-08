@@ -32,7 +32,10 @@ admin_icon.png was modified from runescapeautotyper.com 's donwload icon
 == Frequently Asked Questions ==
 
 == Screenshots ==
-
+1. screenshot-1.png
+2. screenshot-2.png
+3. screenshot-3.png
+4. screenshot-4.png
 
 
 == Changelog ==
