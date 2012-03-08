@@ -4,7 +4,7 @@ Donate link: http://ihacklog.com/donate
 Tags: images, auto,autosave,remote
 Requires at least: 3.2.1
 Tested up to: 3.3.1
-Stable tag: 2.0.0
+Stable tag: 2.0.1
 
 save remote images in the posts to local server and add it as an attachment to the post.
 
@@ -36,6 +36,11 @@ admin_icon.png was modified from runescapeautotyper.com 's donwload icon
 
 
 == Changelog ==
+= 2.0.1 =
+* fixed: libcurl "Operation timed out after 5008 milliseconds with 122371 out of 315645 bytes received" Error.
+* modified: shortened the time interval to auto click the "OK" button.
+* fixed: bug when POST data via jQuery with query string style data param the post content will be cutted strangely.
+
 = 2.0.0 =
 * rewrtie the plugin at all.Now ,many bugs has been fixed.the plugin now works well.
 

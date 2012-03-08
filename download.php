@@ -12,6 +12,7 @@
  */
 require dirname(__FILE__) . '/header.php';
 require dirname(__FILE__) . '/util.class.php';
+//header('Allow: POST');
 ?>
 <?php
 $act = isset($_GET['act']) ? $_GET['act'] : '';

@@ -1,7 +1,7 @@
 <?php
 /* 
 Plugin Name: Hacklog Remote Image Autosave
-Version: 2.0.0
+Version: 2.0.1
 Plugin URI: http://ihacklog.com/?p=5087
 Description: save remote images in the posts to local server and add it as an attachment to the post.
 Author: 荒野无灯
@@ -23,6 +23,7 @@ Author URI: http://ihacklog.com
 
 class hacklog_remote_image_autosave 
 {
+	const VERSION = 'Hacklog Remote Image Autosave 2.0.1';
 	const textdomain = 'hacklog_remote_image_autosave';
 	const opt = 'hacklog_ria_auto_down';
 	private static $plugin_name = 'Hacklog Remote Image Autosave';

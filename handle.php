@@ -24,7 +24,7 @@ iframe_header( __('Hacklog Remote Images Autodown',hacklog_remote_image_autosave
 	.hack { background-image:url(<?php echo WP_PLUGIN_URL . '/hacklog-remote-image-autosave/images/ok_24.png';?>);}
 </style>
 <script type="text/javascript">
-	var check_down_interval = 2000;
+	var check_down_interval = 1000;
 	var img_arr = [];
 	var mce = typeof(parent.tinyMCE) != 'undefined' ? parent.tinyMCE.activeEditor : false;
 	var check_down = function()
@@ -74,28 +74,30 @@ jQuery(function($){
 
 var getContent = function(){
 	return mce.getContent({format : 'text'});
-}
+};
 
 var setContent = function(new_content )
 {
 	return mce.setContent(new_content,{format : 'text'});
-}
+};
+
 var set_status_downloading = function(id)
 {
 		wp_url = ajaxurl.substr(0, ajaxurl.indexOf('wp-admin')),
 		pic_spin = wp_url + 'wp-admin/images/wpspin_dark.gif', // 提交 icon
 	$('#img-'+ id ).parent().append('<span id="img-status-' + id + '"><img src="' + pic_spin + '" alt="downloading">下载中...</span>');
-}
+};
 
 var set_status_done = function(id)
 {
 	$('#img-status-'+ id ).html('<img src="<?php echo WP_PLUGIN_URL . '/hacklog-remote-image-autosave/images/ok_24.png';?>" alt="done">');
-}
+};
+
 var set_status_failed = function(id,msg)
 {
 	//$('#img-status-'+ id + ' img').hide();
 	$('#img-status-'+ id ).html('Error: ' + msg);
-}
+};
 
 
 var replace_token =  function()
@@ -112,15 +114,15 @@ var replace_token =  function()
 
 	}
 	setContent( content );
-}
+};
 
-$('#replace-token').click(
+	$('#replace-token').click(
 	function(e)
 	{
 		replace_token();
 		return false;
-	}
-	);
+	});
+	
 	var down_single_img = function(id,post_id,url)
 	{
 		console.log(url);
@@ -129,7 +131,7 @@ $('#replace-token').click(
 		$.ajax(
 		{
 			url: '<?php echo $url;?>?act=do_download',
-			data: 'url='+ url + '&post_id=' + post_id,
+			data: {'url': url, 'post_id': post_id},
 			async: true,
 			success: function(data,textStatus){
 				if( 'ok' == data.status )
@@ -162,7 +164,7 @@ $('#replace-token').click(
 		$.ajax({
 			url:'<?php echo $url;?>?act=get_images',
 			type:'post',
-			data: 'content=' + content,
+			data: {'content':  content},
 			dataType: 'json',
 			success: function(data,textStatus){
 				//alert( data.content );
