@@ -3,8 +3,8 @@ Contributors: ihacklog
 Donate link: http://ihacklog.com/donate
 Tags: images, auto,autosave,remote
 Requires at least: 3.2.1
-Tested up to: 3.3
-Stable tag: 1.0.2
+Tested up to: 3.3.1
+Stable tag: 2.0.0
 
 save remote images in the posts to local server and add it as an attachment to the post.
 
@@ -14,11 +14,14 @@ save remote images in the posts to local server and add it as an attachment to t
 This plugin can save remote images in the posts to local server automatically and 
 add it as an attachment to the post.
 * capabile with Hacklog Remote Attachment plugin and Watermark Reloaded plugin
- 
+admin_icon.png was modified from runescapeautotyper.com 's donwload icon 
  
 此插件的作用是自动保存日志中的远程图片到本地服务器并将保存后的文件作为日志的附件。
 * 与Hacklog Remote Attachment 插件兼容性良好　
 * 与Watermark Reloaded 插件兼容性良好　
+2.0.0 版完全重写。相比于原来1.0.2版的插件，有非常大的改进。
+原来的插件是在文章更新时自动下载远程图片，如果图片非常多的话，这样容易导致执行超时或只有部分图片被下载了。
+这次的新版采用的是ajax异步请求的方式让多个文件同时下载。效率和易用性都得到很大改善。
  
 == Installation ==
 
@@ -33,6 +36,9 @@ add it as an attachment to the post.
 
 
 == Changelog ==
+= 2.0.0 =
+* rewrtie the plugin at all.Now ,many bugs has been fixed.the plugin now works well.
+
 = 1.0.2 =
 * fixed the bug when the hacklog remote attachment does not exists,the plugin will not save remote images.
 
