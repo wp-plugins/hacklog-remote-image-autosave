@@ -1,0 +1,3 @@
+<?php
+iframe_footer();
+?>
