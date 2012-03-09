@@ -172,18 +172,22 @@ class hacklog_ria_util {
 	 * NOTE: wp curl class default timeoute is 5s,must set it long to avoid the 
 	 * "Operation timed out after 5008 milliseconds with 122371 out of 315645 bytes received"
 	 * error.
+	 * On windows server,if we want to fetch data from ssl remote server, 
+	 * extra things shoudl be do with php5 curl module,set ssl verify to FALSE can simply solve the problem.
+	 * but this is not the ideal solution!
 	 * @param unknown_type $post_id
 	 * @param unknown_type $url
 	 * @return boolean|multitype:string unknown |multitype:string Ambigous <string, number>
 	 */
 	public static function down_remote_file($post_id, $url) {
 		global $wp_version;
+		//set up required options
 		$http_options = array(
 				'timeout' => 60,
 				'redirection' => 10,
 				'user-agent' => 'WordPress/' . $wp_version . '; ' . hacklog_remote_image_autosave::VERSION,
+				'sslverify' => FALSE,
 				);
-		// begin to save pic;
 		$home_url = home_url ( '/' );
 		set_time_limit ( 60 );
 		// if is remote image
@@ -193,8 +197,16 @@ class hacklog_ria_util {
 		$response_code = wp_remote_retrieve_response_code ( $headers );
 		// var_dump($response_code);exit;
 		// 302 防盗链的，不下载
-		if (200 != $response_code) {
-			echo self::raise_error ( 'fetch error!' );
+		if (200 != $response_code) 
+		{
+			if (is_wp_error ( $headers )) 
+			{
+				echo self::raise_error( $headers->get_error_message() );
+			}
+			else
+			{
+				echo self::raise_error( 'fetch error!' );
+			}
 			return FALSE;
 		}
 		$mime = $headers ['headers'] ['content-type'];

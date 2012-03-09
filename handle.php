@@ -10,18 +10,18 @@
  * @copyright Copyright (C) 2011 荒野无灯
  * @license http://www.gnu.org/licenses/
  */
-require dirname(__FILE__) . '/header.php';
+require dirname ( __FILE__ ) . '/header.php';
 
-//enqueue the needed media stylesheet
-//wp_enqueue_style('media');
+@header ( 'Content-Type: ' . get_option ( 'html_type' ) . '; charset=' . get_option ( 'blog_charset' ) );
 
-@header('Content-Type: ' . get_option('html_type') . '; charset=' . get_option('blog_charset'));
-
-$GLOBALS['body_id'] = 'media-upload';
-iframe_header( __('Hacklog Remote Images Autodown',hacklog_remote_image_autosave::textdomain), false );
+$GLOBALS ['body_id'] = 'media-upload';
+iframe_header ( __ ( 'Hacklog Remote Images Autodown', hacklog_remote_image_autosave::textdomain ), false );
 ?>
 <style type="text/css" media="screen">
-	.hack { background-image:url(<?php echo WP_PLUGIN_URL . '/hacklog-remote-image-autosave/images/ok_24.png';?>);}
+.hack {
+	background-image: url(<?php echo WP_PLUGIN_URL . '/hacklog-remote-image-autosave/images/ok_24.png';
+?>);
+}
 </style>
 <script type="text/javascript">
 	var check_down_interval = 1000;
@@ -41,6 +41,7 @@ iframe_header( __('Hacklog Remote Images Autodown',hacklog_remote_image_autosave
 						setTimeout("check_down();",check_down_interval);
 					}
 				};
+			
 // @see http://www.tinymce.com/wiki.php/API3:class.tinymce.dom.Selection
 // @see http://www.tinymce.com/wiki.php/API3:method.tinymce.dom.Selection.getContent
 jQuery(function($){
@@ -83,9 +84,17 @@ var setContent = function(new_content )
 
 var set_status_downloading = function(id)
 {
-		wp_url = ajaxurl.substr(0, ajaxurl.indexOf('wp-admin')),
-		pic_spin = wp_url + 'wp-admin/images/wpspin_dark.gif', // 提交 icon
-	$('#img-'+ id ).parent().append('<span id="img-status-' + id + '"><img src="' + pic_spin + '" alt="downloading">下载中...</span>');
+		var wp_url = ajaxurl.substr(0, ajaxurl.indexOf('wp-admin'));
+		var pic_spin = wp_url + 'wp-admin/images/wpspin_dark.gif'; // 提交 icon]
+		var download_img = '<img src="' + pic_spin + '" alt="downloading">下载中...';
+	if($('#img-status-' + id ).length > 0 )
+	{
+		$('#img-status-' + id ).html(download_img);
+	}
+	else
+	{	
+		$('#img-'+ id ).parent().append('<span id="img-status-' + id + '">' + download_img + '</span>');
+	}
 };
 
 var set_status_done = function(id)
@@ -96,9 +105,25 @@ var set_status_done = function(id)
 var set_status_failed = function(id,msg)
 {
 	//$('#img-status-'+ id + ' img').hide();
-	$('#img-status-'+ id ).html('Error: ' + msg);
+	$('#img-status-'+ id ).html('<strong>Error:</strong> ' + msg + '&nbsp;&nbsp;<a href="javascript:void(0);" rel="' + id + '" class="retry">Retry</a>');
 };
 
+$('#replace-token').click(
+		function(e)
+		{
+			replace_token();
+			return false;
+		});
+
+$('.retry').live('click',function(){
+	var id = $(this).attr('rel');
+	var post_id = $('#post_id').val();
+	var url = $('#img-'+ id ).val();
+	//alert( 'id:' + id + '    post_id:' + post_id + '    url:' + url );
+	//$('#img-status-'+ id ).remove();
+	down_single_img(id,post_id,url);
+	return false;
+	});	
 
 var replace_token =  function()
 {
@@ -116,13 +141,7 @@ var replace_token =  function()
 	setContent( content );
 };
 
-	$('#replace-token').click(
-	function(e)
-	{
-		replace_token();
-		return false;
-	});
-	
+
 	var down_single_img = function(id,post_id,url)
 	{
 		console.log(url);
@@ -154,7 +173,6 @@ var replace_token =  function()
 			);
 
 	};
-
 
 	var get_images = function()
 	{
@@ -211,6 +229,7 @@ var replace_token =  function()
 	}
 	else
 	{
+		$('#hacklog-ria-form').show();
 		//alert(mce.getContent({format : 'text'}));
 		//mce.setContent(mce.getContent({format : 'text'})+'<a href="#aaa">aaa</a>',{format : 'text'});
 		get_images();
@@ -220,14 +239,13 @@ var replace_token =  function()
 //parent.document.getElementById('content').value = parent.document.getElementById('content').value + '<a href="#test">test</a>';
 //alert( parent.document.getElementById('content').value );
 </script>
-<form action="" method="post" accept-charset="utf-8" style="margin:8px auto;padding:10px;">
-<input type="hidden" id="post_id" name="post_id" value="<?php echo $post_id;?>">
-<input type="hidden" id="img-cnt" name="img_cnt" value="0">
-<div id="image-list">
-	
-</div>
-<input type="button" class="button-primary" style="position:absolute;right:60px;" id="replace-token" name="update" value="OK">
+<form id="hacklog-ria-form" action="" method="post" accept-charset="utf-8" style="display:none;margin: 8px auto; padding: 10px;">
+	<input type="hidden" id="post_id" name="post_id" value="<?php echo $post_id;?>"> 
+	<input type="hidden" id="img-cnt" name="img_cnt" value="0">
+	<div id="image-list"></div>
+	<input type="button" class="button-primary"	style="position: absolute; right: 60px;" id="replace-token"
+		name="update" value="OK">
 </form>
 <?php
-require dirname(__FILE__) . '/footer.php';
+require dirname ( __FILE__) . '/footer.php';
 ?>
