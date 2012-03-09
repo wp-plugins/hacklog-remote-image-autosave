@@ -10,6 +10,7 @@
  * @copyright Copyright (C) 2011 荒野无灯
  * @license http://www.gnu.org/licenses/
  */
+
 require dirname(__FILE__) . '/header.php';
 require dirname(__FILE__) . '/util.class.php';
 //header('Allow: POST');
