@@ -31,22 +31,35 @@ class hacklog_ria_util {
 		return self::$code_block;
 	}
 	
+	/**
+	 * check if the url is a remote image resource.
+	 * @param unknown_type $url
+	 */
 	static function is_remote_file($url) {
-		$home_url = home_url ( '/' );
-		$is_remote_file = FALSE;
+		$upload_dir = wp_upload_dir();
+		$local_baseurl = $upload_dir['baseurl'];
 		$my_remote_baseurl = '';
 		// Compatible with Hacklog Remote Attachment plugin
 		if (class_exists ( 'hacklogra' )) {
 			$hacklogra_opt = get_option ( hacklogra::opt_primary );
 			$my_remote_baseurl = $hacklogra_opt ['remote_baseurl'];
 		}
+		//Hacklog Remote Attachment upyun
+		if (class_exists ( 'hacklogra_upyun' )) {
+			$hacklogra_opt = get_option ( hacklogra_upyun::opt_primary );
+			$my_remote_baseurl = $hacklogra_opt ['remote_baseurl'];
+		}		
 		// var_dump( ( 0 !== stripos($url,$home_url) ) );
-		if (0 !== stripos ( $url, $home_url )) {
-			$is_remote_file = TRUE;
-		} elseif (! empty ( $my_remote_baseurl ) && (stripos ( $url, $my_remote_baseurl ) === FALSE)) {
-			$is_remote_file = TRUE;
+		if(	0 === stripos ( $url, $local_baseurl ) )
+		{
+			return FALSE;
 		}
-		return $is_remote_file;
+		
+		if( !empty( $my_remote_baseurl ) && ( 0 === stripos( $url, $my_remote_baseurl ) ) )
+		{
+			return FALSE;
+		}
+		return TRUE;
 	}
 	
 	public static function img_tag_callback($matches) {
