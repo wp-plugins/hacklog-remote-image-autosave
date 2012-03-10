@@ -4,7 +4,7 @@ Donate link: http://ihacklog.com/donate
 Tags: images, auto,autosave,remote
 Requires at least: 3.2.1
 Tested up to: 3.3.1
-Stable tag: 2.0.2
+Stable tag: 2.0.3
 
 save remote images in the posts to local server and add it as an attachment to the post.
 
@@ -42,6 +42,13 @@ add it as an attachment to the post.
 
 
 == Changelog ==
+
+= 2.0.3 =
+* improved: get PHP execution timeout errors being caught.
+* improved: get HTTP server 500 Internal Server Error being caught.
+* improved: update the downloading status image.
+* improved: added notice message after all images has been downloaded.
+* added: thumbnails creating function. 
 
 = 2.0.2 =
 * improved: added https support(the ssl verify has been set to FALSE due to some reasons).

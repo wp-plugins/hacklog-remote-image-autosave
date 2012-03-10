@@ -18,12 +18,18 @@ $GLOBALS ['body_id'] = 'media-upload';
 iframe_header ( __ ( 'Hacklog Remote Images Autodown', hacklog_remote_image_autosave::textdomain ), false );
 ?>
 <style type="text/css" media="screen">
-.hack {
+.hack-ok {
 	background-image: url(<?php echo WP_PLUGIN_URL . '/hacklog-remote-image-autosave/images/ok_24.png';
-?>);
+?>);}
+.hack-downloading {
+	background-image: url(<?php echo WP_PLUGIN_URL . '/hacklog-remote-image-autosave/images/downloading.gif';
+?>);}
+.error {
+	color:#F00;
 }
 </style>
 <script type="text/javascript">
+	var hacklog_ria_debug = false;
 	var check_down_interval = 1000;
 	var img_arr = [];
 	var mce = typeof(parent.tinyMCE) != 'undefined' ? parent.tinyMCE.activeEditor : false;
@@ -35,6 +41,7 @@ iframe_header ( __ ( 'Hacklog Remote Images Autodown', hacklog_remote_image_auto
 					{
 						button_obj.click();
 						button_obj.style.display= 'none';
+						jQuery('#all-done').slideDown("slow");
 					}
 					else
 					{
@@ -52,25 +59,23 @@ jQuery(function($){
 			dataType: 'json',
 			async: false,
 			cache: false,
+			timeout: 300*1000,
 			complete: function(jqXHR, textStatus){
+				hacklog_ria_debug && alert('complete hook called. textStatus: ' + textStatus);
 				if( textStatus == 'success')
 				{
 
 				}
-			},			
-			error: function (jqXHR, textStatus, errorThrown)
-			{
-
 			},
 			statusCode: 
 			{
-    			404: function() {
-      				alert('404,page not found');
-    			},
-    			405: function() {
-      				alert('fetch error!');
-    			}
-  			}
+    			404: function() {  hacklog_ria_debug && alert('404 page not found.'); },
+    			500: function() {  hacklog_ria_debug && alert('500 Internal Server Error!'); }
+			},			
+			error: function(jqXHR, textStatus, errorThrown){
+				hacklog_ria_debug && alert('error hook called. textStatus: ' + textStatus +"\n" + 'errorThrown: ' + errorThrown);
+			}
+
 	});
 
 var getContent = function(){
@@ -84,9 +89,8 @@ var setContent = function(new_content )
 
 var set_status_downloading = function(id)
 {
-		var wp_url = ajaxurl.substr(0, ajaxurl.indexOf('wp-admin'));
-		var pic_spin = wp_url + 'wp-admin/images/wpspin_dark.gif'; // 提交 icon]
-		var download_img = '<img src="' + pic_spin + '" alt="downloading">下载中...';
+		var download_img = '<img src="<?php echo WP_PLUGIN_URL . '/hacklog-remote-image-autosave/images/downloading.gif';
+		?>" alt="downloading">下载中...';
 	if($('#img-status-' + id ).length > 0 )
 	{
 		$('#img-status-' + id ).html(download_img);
@@ -105,17 +109,19 @@ var set_status_done = function(id)
 var set_status_failed = function(id,msg)
 {
 	//$('#img-status-'+ id + ' img').hide();
-	$('#img-status-'+ id ).html('<strong>Error:</strong> ' + msg + '&nbsp;&nbsp;<a href="javascript:void(0);" rel="' + id + '" class="retry">Retry</a>');
+	$('#img-status-'+ id ).html('<strong>Error:</strong><span class="error">' + msg + '</span>&nbsp;&nbsp;<a href="javascript:void(0);" rel="' + id + '" class="retry">Retry</a>');
 };
 
 $('#replace-token').click(
 		function(e)
 		{
+			e.stopPropagation();
 			replace_token();
 			return false;
 		});
 
-$('.retry').live('click',function(){
+$('.retry').live('click',function(e){
+	e.stopPropagation();
 	var id = $(this).attr('rel');
 	var post_id = $('#post_id').val();
 	var url = $('#img-'+ id ).val();
@@ -133,9 +139,9 @@ var replace_token =  function()
 	{
 				var token = $('#img-' + img_arr[i].id ).attr('rel');
 				var img_html =  img_arr[i].html;
-				console.log('token: '+ token);
+				hacklog_ria_debug && console.log('token: '+ token);
 				content = content.replace( token, img_html );
-				console.log('set new content:'+ content);
+				hacklog_ria_debug && console.log('set new content:'+ content);
 
 	}
 	setContent( content );
@@ -144,7 +150,7 @@ var replace_token =  function()
 
 	var down_single_img = function(id,post_id,url)
 	{
-		console.log(url);
+		hacklog_ria_debug && console.log(url);
 		set_status_downloading(id);
 
 		$.ajax(
@@ -153,13 +159,13 @@ var replace_token =  function()
 			data: {'url': url, 'post_id': post_id},
 			async: true,
 			success: function(data,textStatus){
+				//alert(textStatus + 'data: ' + data);
 				if( 'ok' == data.status )
 				{
 				$('#img-'+ id ).val(data.src);
-				//$('#img-'+ id ).parent().append('<input id="img-' + id + '-html" type="hidden" name="img-hidden[]" value="' + data.html + '">');
 				//id ,token, data
 				var token = $('#img-'+ id ).attr('rel');
-				console.log(token);
+				hacklog_ria_debug && console.log('down_single_img get token: ' + token);
 				img_arr.push({'id':id,'token': token,'html':data.html});
 				set_status_done(id);
 				}
@@ -167,6 +173,10 @@ var replace_token =  function()
 				{
 					set_status_failed(id,data.error_msg);
 				}
+			},
+			error: function(jqXHR, textStatus, errorThrown){
+				errorThrown = errorThrown ? errorThrown :'Fetch timeout';
+				set_status_failed(id,errorThrown + '. Check your HTTP Server error log or PHP error log to see what happend.');
 			}
 
 		}
@@ -190,7 +200,7 @@ var replace_token =  function()
 				{
 				//设置把图片置空后的内容
 				setContent(data.content);
-				console.log('replaced content:  ' + data.content);
+				hacklog_ria_debug && console.log('replaced content:  ' + data.content);
 				//帖出图片信息
 				var html = $('<ol>');
 				for(var i=0;i<data.images.length;++i)
@@ -239,7 +249,12 @@ var replace_token =  function()
 //parent.document.getElementById('content').value = parent.document.getElementById('content').value + '<a href="#test">test</a>';
 //alert( parent.document.getElementById('content').value );
 </script>
-<form id="hacklog-ria-form" action="" method="post" accept-charset="utf-8" style="display:none;margin: 8px auto; padding: 10px;">
+<div style="visibility:hidden;">
+<span class="hack-downloading"></span>
+<span class="hack-ok"></span>
+</div>
+<h3 id="all-done" style="display:none;color:#57d;margin:15px auto 0 40px;">All remote images has been downloaded.Have fun -_-.</h3>
+<form id="hacklog-ria-form" action="" method="post" accept-charset="utf-8" style="display:none;margin: 0 auto 8px; padding: 10px;">
 	<input type="hidden" id="post_id" name="post_id" value="<?php echo $post_id;?>"> 
 	<input type="hidden" id="img-cnt" name="img_cnt" value="0">
 	<div id="image-list"></div>

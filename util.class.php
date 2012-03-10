@@ -65,7 +65,7 @@ class hacklog_ria_util {
 			self::$code_block_num ++;
 			return $replaced_content;
 		} else {
-			return $matches [0];
+			return $matches[0];
 		}
 	}
 	
@@ -89,7 +89,7 @@ class hacklog_ria_util {
 			self::$code_block_num ++;
 			return $replaced_content;
 		} else {
-			return $matches [0];
+			return $matches[0];
 		}
 	}
 	
@@ -168,6 +168,55 @@ class hacklog_ria_util {
 		);
 	}
 	
+	
+	public static function setup_shutdown_handler()
+	{
+		add_action('shutdown', array (__CLASS__, 'shutdown_handler'), -999);
+	}
+
+	/**
+	 * @see http://php.net/manual/en/function.register-shutdown-function.php
+	 * @see http://www.php.net/manual/en/features.connection-handling.php
+	 * @see http://cn2.php.net/manual/en/function.error-log.php
+	 * @see http://www.php.net/manual/en/function.ignore-user-abort.php
+	 * @see http://www.php.net/manual/en/function.connection-aborted.php
+	 */
+	public static function shutdown_handler()
+	{
+		//ensure that ignore_user_abort(true) was called before.
+		if( connection_aborted() )
+		{
+			$error_msg = 'User try to abort connection.Abort was canceled by PHP';
+			error_log($error_msg,0);
+		}
+
+		$e = error_get_last();
+		switch ($e['type'])
+		{
+			case E_WARNING :
+			case E_USER_WARNING :
+			case E_STRICT :
+			case E_NOTICE :
+			case E_DEPRECATED :
+			case E_USER_NOTICE :
+				$type = 'warning';
+				$fatal = false;
+				break;
+			default :
+				$type = 'fatal error';
+				$fatal = true;
+				break;
+		}
+		
+		if( $fatal )
+		{
+		$error_msg = $type . ': ' . strip_tags($e['message']) . ' at ' . $e['file'] . ' ' . $e['line'];
+		echo self::raise_error ( $error_msg );
+		error_log($error_msg,0);
+		die();
+		}
+	}
+	
 	/**
 	 * NOTE: wp curl class default timeoute is 5s,must set it long to avoid the 
 	 * "Operation timed out after 5008 milliseconds with 122371 out of 315645 bytes received"
@@ -183,13 +232,13 @@ class hacklog_ria_util {
 		global $wp_version;
 		//set up required options
 		$http_options = array(
-				'timeout' => 60,
-				'redirection' => 10,
+				'timeout' => 120,
+				'redirection' => 20,
 				'user-agent' => 'WordPress/' . $wp_version . '; ' . hacklog_remote_image_autosave::VERSION,
 				'sslverify' => FALSE,
 				);
 		$home_url = home_url ( '/' );
-		set_time_limit ( 60 );
+		set_time_limit ( 200 );
 		// if is remote image
 		$remote_image_url = $url;
 		$headers = wp_remote_head ( $remote_image_url, $http_options );
@@ -233,13 +282,19 @@ class hacklog_ria_util {
 				echo self::raise_error ( 'Can not fetch remote image file!' );
 				return FALSE;
 			}
-			if (! self::check_image_size ( $file_content )) {
+			
+			if ( !self::check_image_size ( $file_content )) {
 				return self::return_origin ( $remote_image_url );
 			}
 			$filename = sanitize_file_name ( basename ( $remote_image_url ) );
 			$type = $mime;
 			// download remote file and save it into database;
 			$result = self::handle_upload ( $filename, $file_content, $type, $post_id );
+			if( is_wp_error($result) )
+			{
+				echo self::raise_error ( $result->get_error_message() );
+				return FALSE;
+			}
 			// var_dump($result);exit;
 			if (! is_wp_error ( $result ['id'] )) {
 				// wp_get_attachment_image($attachment_id, $size = 'thumbnail',
@@ -253,6 +308,12 @@ class hacklog_ria_util {
 						'src' => $result ['url'],
 						'html' => $html 
 				);
+			}
+			else
+			{
+				$result_id = $result ['id'];
+				echo self::raise_error ( $result_id->get_error_message() );
+				return FALSE;
 			}
 		}
 	
@@ -301,7 +362,7 @@ class hacklog_ria_util {
 		
 		// Compatible with Hacklog Remote Attachment plugin
 		if (class_exists ( 'hacklogra' )) {
-			$url = hacklogra::replace_attachurl ( $url );
+			$url = hacklogra::replace_attachurl( $url );
 		}
 		
 		if (is_multisite ())
@@ -344,16 +405,18 @@ class hacklog_ria_util {
 		
 		if (! is_wp_error ( $id )) {
 			// Compatible with Watermark Reloaded plugin
-			$metadata = self::generate_attachment_metadata ( $id, $file );
+			//$metadata = self::generate_attachment_metadata ( $id, $file );
+			//generate attachment metadata AND create thumbnails
+			$metadata = wp_generate_attachment_metadata( $id, $file );
 			// Compatible with Hacklog Remote Attachment plugin
 			// if Hacklog Remote Attachment failed to upload file to remote FTP
 			// server
 			// then,it will return an error.if this was not stopped,the image
 			// will be un-viewable.
 			// if failed,delete the attachment we just added from the database.
-			if (is_wp_error ( $metadata ) || ! isset ( $metadata ['file'] )) {
+			if (is_wp_error ( $metadata ) || !isset ( $metadata ['file'] )) {
 				wp_delete_attachment ( $id, TRUE );
-				wp_die ( sprintf ( __ ( '<h2>Error:</h2><h3 style="color:#f00;">%s</h3>' ), $metadata ['error'] ) );
+				return new WP_Error( 'hacklog_ria_generate_attachment_metadata_failed', __( $metadata ['error'] ) );
 			}
 			wp_update_attachment_metadata ( $id, $metadata );
 		}
@@ -364,9 +427,10 @@ class hacklog_ria_util {
 		);
 	}
 	
+
 	/**
-	 *
-	 * @param int $attachment_id        	
+	 * generate attachment metadata but DO NOT create thumbnails etc.
+	 * @param int $attachment_id
 	 * @param string $file
 	 *        	absolute file path
 	 */
@@ -379,7 +443,7 @@ class hacklog_ria_util {
 			$metadata ['height'] = $imagesize [1];
 			list ( $uwidth, $uheight ) = wp_constrain_dimensions ( $metadata ['width'], $metadata ['height'], 128, 96 );
 			$metadata ['hwstring_small'] = "height='$uheight' width='$uwidth'";
-			
+				
 			// Make the file path relative to the upload dir
 			$metadata ['file'] = _wp_relative_upload_path ( $file );
 			// work with some watermark plugin
