@@ -1,13 +1,4 @@
 <?php
-/* 
-Plugin Name: Hacklog Remote Image Autosave
-Version: 2.0.5
-Plugin URI: http://ihacklog.com/?p=5087
-Description: save remote images in the posts to local server and add it as an attachment to the post.
-Author: 荒野无灯
-Author URI: http://ihacklog.com
-*/
-
 /**
  * $Id$
  * $Revision$
@@ -38,12 +29,10 @@ class hacklog_remote_image_autosave
 	{
 		self::$opts = get_option(self::opt, self::$opts);
 		add_action( 'admin_menu', array (__CLASS__, 'add_setting_menu' ) );
-		//add_filter( 'content_save_pre', array (__CLASS__, 'save_post' ) );
-		//add_action( 'admin_footer', array (__CLASS__, 'footer_js' ) );
 		// add editor button
 		add_action('media_buttons', array(__CLASS__, 'add_media_button'), 20);
-		register_activation_hook(__FILE__, array(__CLASS__, 'my_activation'));
-		register_deactivation_hook(__FILE__, array(__CLASS__, 'my_deactivation'));
+		register_activation_hook(HACKLOG_RIA_LOADER, array(__CLASS__, 'my_activation'));
+		register_deactivation_hook(HACKLOG_RIA_LOADER, array(__CLASS__, 'my_deactivation'));
 	}
 
 	/**
@@ -103,7 +92,7 @@ class hacklog_remote_image_autosave
 	//add option menu to Settings menu
 	function add_setting_menu() 
 	{
-		add_options_page( self::$plugin_name. ' Options', 'Hacklog RIA', 8, __FILE__, array(__CLASS__,'option_page') );
+		add_options_page( self::$plugin_name. ' Options', 'Hacklog RIA', 'manage_options', md5(HACKLOG_RIA_LOADER), array(__CLASS__,'option_page') );
 	}
 	
 	//option page
@@ -156,6 +145,3 @@ class hacklog_remote_image_autosave
 	}
 
 } //end class
-
-//ok,let's go,have fun-_-
-hacklog_remote_image_autosave::init();

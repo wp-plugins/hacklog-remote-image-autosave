@@ -4,7 +4,7 @@ Donate link: http://ihacklog.com/donate
 Tags: images, auto,autosave,remote
 Requires at least: 3.2.1
 Tested up to: 3.3.1
-Stable tag: 2.0.5
+Stable tag: 2.0.6
 
 save remote images in the posts to local server and add it as an attachment to the post.
 
@@ -42,6 +42,10 @@ add it as an attachment to the post.
 
 
 == Changelog ==
+
+= 2.0.6 =
+* improved: DO NOT load plugin in front end.
+* fixed: changed to use the WP 3.0 version Roles and Capabilities permission value
 
 = 2.0.5 =
 * improved: the method to check whether a link resource is a picture
