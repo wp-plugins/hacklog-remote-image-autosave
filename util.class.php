@@ -84,15 +84,18 @@ class hacklog_ria_util {
 	
 	/**
 	 *
-	 * @todo : add extra to check wether a link resource is a picture
+	 * @todo : add extra to check whether a link resource is a picture
 	 */
 	public static function link_img_tag_callback($matches) {
 		// var_dump($matches);
 		$index = sprintf ( self::$code_block_index, self::$code_block_num );
 		$replaced_content = $index;
 		$src = $matches [5];
+		$href = $matches[2];
 		// if the link is not a picture
-		$href = strpos ( basename ( $matches [2] ), '.' ) !== FALSE ? $matches [2] : $src;
+		$url_path = parse_url($href,PHP_URL_PATH);
+		$ext_no_dot = pathinfo(basename($url_path), PATHINFO_EXTENSION);
+		$href = in_array($ext_no_dot, array_values(self::$mime_to_ext) ) ? $href : $src;
 		if (self::is_remote_file ( $href )) {
 			self::$code_block [$index] = array (
 					'id' => self::$code_block_num,
