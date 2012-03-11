@@ -374,14 +374,18 @@ class hacklog_ria_util {
 		$url = $uploads ['url'] . "/$filename";
 		
 		// Compatible with Hacklog Remote Attachment plugin
-		if (class_exists ( 'hacklogra' )) {
-			$url = hacklogra::replace_attachurl( $url );
+		if (class_exists ( 'hacklogra' )) 
+		{
+			//apply_filters( 'wp_handle_upload', array( 'file' => $new_file, 'url' => $url, 'type' => $type ), 'upload' );
+			$hacklogra_file = hacklogra::upload_and_send( array('file'=>$new_file,'url'=>$url) );
+			$url = $hacklogra_file['url'];
+			$new_file = $hacklogra_file['file'];
 		}
 		
 		if (is_multisite ())
 			delete_transient ( 'dirsize_cache' );
 			
-			// array( 'file' => $new_file, 'url' => $url, 'type' => $type );
+		// array( 'file' => $new_file, 'url' => $url, 'type' => $type );
 		$name_parts = pathinfo ( $filename );
 		$name = trim ( substr ( $filename, 0, - (1 + strlen ( $name_parts ['extension'] )) ) );
 		
