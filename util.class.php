@@ -110,22 +110,12 @@ class hacklog_ria_util {
 	}
 	
 	static function get_link_images($content) {
-		/*
-		 * $content =
-		 * 	preg_replace_callback("/(\s*)<a[^>]*?href=('|\"|)?([^'\"]*)(\\1)[^>]*?>\s*<img[^>]*?src=('|\"|)?([^'\"]*?)(\\4)[^>]*?>\s*<\/a>(\s*)/is",
-		 * 'hacklog_ria_util::link_img_tag_callback', $content);
-		 */
 		$content = preg_replace_callback ( "/<a[^>]*?href=('|\"|)?([^'\"]+)(\\1)[^>]*?>\s*<img[^>]*?src=('|\"|)?([^'\"]+)(\\4)[^>]*?>\s*<\/a>/is", 'hacklog_ria_util::link_img_tag_callback', $content );
 		return $content;
 	}
 	
 	static function get_images($content) {
 		$content = self::get_link_images ( $content );
-		/*
-		 * $content =
-		 * 	preg_replace_callback("/(\s*)<img[^>]*?src=('|\"|)?([^'\"]*?)(\\1)[^>]*?>(\s*)/is",
-		 * 'hacklog_ria_util::img_tag_callback', $content);
-		 */
 		$content = preg_replace_callback ( "/<img[^>]*?src=('|\"|)?([^'\"]+)(\\1)[^>]*?>/is", 'hacklog_ria_util::img_tag_callback', $content );
 		return $content;
 	}
