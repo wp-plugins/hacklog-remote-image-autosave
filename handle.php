@@ -18,16 +18,19 @@ $GLOBALS ['body_id'] = 'media-upload';
 iframe_header ( __ ( 'Hacklog Remote Images Autodown', hacklog_remote_image_autosave::textdomain ), false );
 ?>
 <style type="text/css" media="screen">
-.hack-ok {
-	background-image: url(<?php echo WP_PLUGIN_URL . '/hacklog-remote-image-autosave/images/ok_24.png';
-?>);}
-.hack-downloading {
-	background-image: url(<?php echo WP_PLUGIN_URL . '/hacklog-remote-image-autosave/images/downloading.gif';
-?>);}
 .error {
 	color:#F00;
 }
 </style>
+
+<script type="text/javascript">
+//Preload images
+(new Image()).src = "<?php echo WP_PLUGIN_URL . '/hacklog-remote-image-autosave/images/ok_24.png';
+	?>";
+(new Image()).src = "<?php echo WP_PLUGIN_URL . '/hacklog-remote-image-autosave/images/downloading.gif';
+	?>";	
+</script>
+
 <script type="text/javascript">
 	var hacklog_ria_debug = false;
 	var check_down_interval = 1000;
@@ -210,12 +213,11 @@ var replace_token =  function()
 				}
 				$('#image-list').html(html);
 				$('#img-cnt').val( data.images.length );
+				var post_id = $('#post_id').val();
 				for(var i=0;i<data.images.length;++i)
 				{
 					var id =  data.images[i].id;
-					var post_id = $('#post_id').val();
 					down_single_img(id,post_id, data.images[i].url);
-
 				}	
 				setTimeout("check_down();",check_down_interval);
 			}
@@ -240,19 +242,11 @@ var replace_token =  function()
 	else
 	{
 		$('#hacklog-ria-form').show();
-		//alert(mce.getContent({format : 'text'}));
-		//mce.setContent(mce.getContent({format : 'text'})+'<a href="#aaa">aaa</a>',{format : 'text'});
 		get_images();
 	}
 });
-//alert(parent.location.href);
-//parent.document.getElementById('content').value = parent.document.getElementById('content').value + '<a href="#test">test</a>';
-//alert( parent.document.getElementById('content').value );
 </script>
-<div style="visibility:hidden;">
-<span class="hack-downloading"></span>
-<span class="hack-ok"></span>
-</div>
+
 <h3 id="all-done" style="display:none;color:#57d;margin:15px auto 0 40px;">All remote images has been downloaded.Have fun -_-.</h3>
 <form id="hacklog-ria-form" action="" method="post" accept-charset="utf-8" style="display:none;margin: 0 auto 8px; padding: 10px;">
 	<input type="hidden" id="post_id" name="post_id" value="<?php echo $post_id;?>"> 
