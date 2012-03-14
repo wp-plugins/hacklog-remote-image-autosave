@@ -15,7 +15,7 @@ defined('ABSPATH') || die('No direct access!');
 
 class hacklog_remote_image_autosave 
 {
-	const VERSION = 'Hacklog Remote Image Autosave 2.0.5';
+	const VERSION = 'Hacklog Remote Image Autosave 2.0.7';
 	const textdomain = 'hacklog_remote_image_autosave';
 	const opt = 'hacklog_ria_auto_down';
 	private static $plugin_name = 'Hacklog Remote Image Autosave';
