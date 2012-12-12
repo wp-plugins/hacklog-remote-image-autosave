@@ -3,13 +3,14 @@ Contributors: ihacklog
 Donate link: http://ihacklog.com/donate
 Tags: images, auto,autosave,remote
 Requires at least: 3.2.1
-Tested up to: 3.3.1
-Stable tag: 2.0.7
+Tested up to: 3.5
+Stable tag: 2.0.8
 
 save remote images in the posts to local server and add it as an attachment to the post.
 
 
 == Description ==
+升级注意：2.0.8 版是对WP 3.5的更新，如果你使用的WP版本低于 3.5，请不要更新。
 
 This plugin can save remote images in the posts to local server automatically and 
 add it as an attachment to the post.
@@ -42,6 +43,10 @@ add it as an attachment to the post.
 
 
 == Changelog ==
+
+= 2.0.8 =
+* fixed: added support for WP 3.5 for the new TinyMCE.
+
 = 2.0.7 =
 * modified: changed image preload from css to js.
 * removed some un-needed comments.

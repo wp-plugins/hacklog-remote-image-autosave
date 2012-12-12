@@ -7,7 +7,7 @@
  * @encoding UTF-8
  * @author 荒野无灯 <HuangYeWuDeng>
  * @link http://ihacklog.com
- * @copyright Copyright (C) 2011 荒野无灯
+ * @copyright Copyright (C) 2012 荒野无灯
  * @license http://www.gnu.org/licenses/
  */
 require dirname ( __FILE__ ) . '/header.php';
@@ -82,12 +82,12 @@ jQuery(function($){
 	});
 
 var getContent = function(){
-	return mce.getContent({format : 'text'});
+	return mce.getContent({format : 'raw'});
 };
 
 var setContent = function(new_content )
 {
-	return mce.setContent(new_content,{format : 'text'});
+	return mce.setContent(new_content,{format : 'raw'});
 };
 
 var set_status_downloading = function(id)
